@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using SipayApi.Base.BaseModel;
 using SipayApi.Base.Response;
 using SipayApi.DataAccess.Repository.Base;
@@ -14,7 +15,7 @@ namespace SipayApi.Business.Generic
     {
         private readonly IMapper _mapper;
         private readonly IGenericRepository<TEntity> _genericRepository;
-
+        //private readonly DbContext _dbContext;
         public GenericService(IMapper mapper, IGenericRepository<TEntity> genericRepository)
         {
             _mapper = mapper;
@@ -23,7 +24,10 @@ namespace SipayApi.Business.Generic
 
         public ApiResponse Delete(int id)
         {
-            
+
+            //var entity = _dbContext.Set<TEntity>().Find(id);
+            //_dbContext.Set<TEntity>().Remove(entity);
+            //_dbContext.SaveChanges();
            try
             {
                var entity = _genericRepository.GetById(id);
