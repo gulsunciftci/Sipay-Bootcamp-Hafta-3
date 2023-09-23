@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SipayApi.Base\SipayApi.Base.csproj" />
+    <ProjectReference Include="..\SipayApi.Business\SipayApi.Business.csproj" />
     <ProjectReference Include="..\SipayApi.DataAccess\SipayApi.DataAccess.csproj" />
     <ProjectReference Include="..\SipayApi.Schema\SipayApi.Schema.csproj" />
   </ItemGroup>

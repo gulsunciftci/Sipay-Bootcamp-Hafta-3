@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SipayApi.Base.Response;
 using SipayApi.DataAccess.Domain;
-using SipayApi.DataAccess.Repository.AccountRepository;
-using SipayApi.DataAccess.Repository.CustomerRepository;
+using SipayApi.DataAccess.Unitofw;
 using SipayApi.Schema;
 
 namespace SipayApi.Service.Controllers
@@ -13,18 +12,18 @@ namespace SipayApi.Service.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IAccountRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public AccountController(IAccountRepository repository, IMapper mapper)
+        public AccountController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         [HttpGet]
         public ApiResponse<List<AccountResponse>> GetAll()
         {
-            var list = _repository.GetAll();
+            var list = _unitOfWork.AccountRepository.GetAll();
             var mapper = _mapper.Map<List<Account>, List<AccountResponse>>(list);
             return new ApiResponse<List<AccountResponse>>(mapper);
         }
@@ -32,7 +31,7 @@ namespace SipayApi.Service.Controllers
         [HttpGet("{id}")]
         public ApiResponse<AccountResponse> Get(int id) //id'ye göre arama yapar
         {
-            var entity = _repository.GetById(id);
+            var entity = _unitOfWork.AccountRepository.GetById(id);
             var mapper = _mapper.Map<Account, AccountResponse>(entity);
             return new ApiResponse<AccountResponse>(mapper);
         }
@@ -43,8 +42,8 @@ namespace SipayApi.Service.Controllers
         {
             var mapper = _mapper.Map<AccountRequest, Account>(request);
             mapper.IsActive = true;
-            _repository.Insert(mapper);
-            _repository.Save();
+            _unitOfWork.AccountRepository.Insert(mapper);
+            _unitOfWork.AccountRepository.Save();
             return new ApiResponse();
         }
 
@@ -53,7 +52,7 @@ namespace SipayApi.Service.Controllers
         {
             var mapper = _mapper.Map<AccountRequest, Account>(request);
             mapper.IsActive = true;
-            _repository.Insert(mapper);
+            _unitOfWork.AccountRepository.Insert(mapper);
             return new ApiResponse();
         }
 
@@ -61,8 +60,8 @@ namespace SipayApi.Service.Controllers
         [HttpDelete("{id}")]
         public ApiResponse Delete(int id) //id si verilen Stundent silindi
         {
-            _repository.DeleteById(id);
-            _repository.Save();
+            _unitOfWork.AccountRepository.DeleteById(id);
+            _unitOfWork.AccountRepository.Save();
             return new ApiResponse();
         }
 

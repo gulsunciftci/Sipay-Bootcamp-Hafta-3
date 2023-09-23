@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SipayApi.Base.BaseModel;
 using SipayApi.DataAccess.ApplicationDbContext;
+using SipayApi.DataAccess.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,11 @@ namespace SipayApi.DataAccess.Repository.Base
         {
             _simDbContext.Set<T>().Update(t);
             Save();
+        }
+
+        public IEnumerable<T> where(Expression<Func<T, bool>> expression)
+        {
+            return _simDbContext.Set<T>().Where(expression).AsQueryable();
         }
     }
 }

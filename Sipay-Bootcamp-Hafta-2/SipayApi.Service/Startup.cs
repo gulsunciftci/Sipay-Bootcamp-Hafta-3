@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SipayApi.DataAccess.ApplicationDbContext;
 using SipayApi.DataAccess.Repository;
-using SipayApi.DataAccess.Repository.AccountRepository;
-using SipayApi.DataAccess.Repository.CustomerRepository;
-using SipayApi.DataAccess.Repository.TransactionRepository;
+using SipayApi.DataAccess.Unitofw;
 using SipayApi.Schema;
 
 namespace SipayApi;
@@ -48,9 +46,8 @@ public class Startup
         }
 
 
-        services.AddScoped<ICustomerRepository, CustomerRepository>();
-        services.AddScoped<IAccountRepository, AccountRepository>();
-        services.AddScoped<ITransactionRepository,TransactionRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+       
 
 
 

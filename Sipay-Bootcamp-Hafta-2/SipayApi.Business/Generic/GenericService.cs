@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SipayApi.Base.BaseModel;
 using SipayApi.Base.Response;
 using SipayApi.DataAccess.Repository.Base;
+using SipayApi.DataAccess.Unitofw;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,14 @@ namespace SipayApi.Business.Generic
     public class GenericService<TEntity, TRequest, TResponse> : IGenericService<TEntity, TRequest, TResponse> where TEntity : BaseModel
     {
         private readonly IMapper _mapper;
-        private readonly IGenericRepository<TEntity> _genericRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        //IUnitOfWork olduğu için gerek kalmadı
+        //private readonly IGenericRepository<TEntity> _genericRepository;
         //private readonly DbContext _dbContext;
-        public GenericService(IMapper mapper, IGenericRepository<TEntity> genericRepository)
+        public GenericService(IMapper mapper,  IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
-            _genericRepository = genericRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public ApiResponse Delete(int id)
@@ -30,12 +33,12 @@ namespace SipayApi.Business.Generic
             //_dbContext.SaveChanges();
            try
             {
-               var entity = _genericRepository.GetById(id);
+               var entity =_unitOfWork.Repository<TEntity>().GetById(id);
                if (entity == null)
                {
                    return new ApiResponse("Record not found");
                }
-               _genericRepository.DeleteById(id);
+               _unitOfWork.Repository<TEntity>().DeleteById(id);
                return new ApiResponse();
             }
             catch (Exception ex)
@@ -48,7 +51,7 @@ namespace SipayApi.Business.Generic
         {
             try
             {
-                var entity = _genericRepository.GetAll();
+                var entity = _unitOfWork.Repository<TEntity>().GetAll();
                 var mapped = _mapper.Map<List<TEntity>,List<TResponse>>(entity);
                 return new ApiResponse<List<TResponse>>(mapped);
             }
@@ -62,7 +65,7 @@ namespace SipayApi.Business.Generic
         {
             try
             {
-                var entity = _genericRepository.GetById(id);
+                var entity = _unitOfWork.Repository<TEntity>().GetById(id);
                 var mapped = _mapper.Map<TEntity, TResponse>(entity);
                 return new ApiResponse<TResponse>(mapped);
             }
@@ -80,8 +83,8 @@ namespace SipayApi.Business.Generic
                 var entity = _mapper.Map<TRequest,TEntity>(request);
                 entity.InsertDate = DateTime.Now;
                 entity.InsertUser = "sim@admin.com";
-                _genericRepository.Insert(entity);
-                _genericRepository.Save();
+                _unitOfWork.Repository<TEntity>().Insert(entity);
+                _unitOfWork.Repository<TEntity>().Save();
                 return new ApiResponse();
             }
             catch (Exception ex)
@@ -94,15 +97,15 @@ namespace SipayApi.Business.Generic
         {
             try
             {
-                var exist = _genericRepository.GetById(id);
+                var exist = _unitOfWork.Repository<TEntity>().GetById(id);
                 if (exist == null)
                 {
                     return new ApiResponse("Record not found");
                 }
 
                 var entity = _mapper.Map<TRequest, TEntity>(request);
-                _genericRepository.Update(entity);
-                _genericRepository.Save();
+                _unitOfWork.Repository<TEntity>().Update(entity);
+                _unitOfWork.Repository<TEntity>().Save();
                 
                 return new ApiResponse();
             }

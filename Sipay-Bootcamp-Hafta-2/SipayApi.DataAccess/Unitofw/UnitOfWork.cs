@@ -1,4 +1,5 @@
-﻿using SipayApi.DataAccess.ApplicationDbContext;
+﻿using SipayApi.Base.BaseModel;
+using SipayApi.DataAccess.ApplicationDbContext;
 using SipayApi.DataAccess.Domain;
 using SipayApi.DataAccess.Repository.Base;
 using System;
@@ -21,7 +22,10 @@ namespace SipayApi.DataAccess.Unitofw
             TransactionRepository = new GenericRepository<Transaction>(dbContext);
         }
 
-
+        public IGenericRepository<T> Repository<T>() where T : BaseModel
+        {
+            return new GenericRepository<T>(_dbContext); 
+        }
         public IGenericRepository<Account> AccountRepository { get; private set; }
 
         public IGenericRepository<Customer> CustomerRepository { get; private set; }
@@ -30,7 +34,22 @@ namespace SipayApi.DataAccess.Unitofw
 
         public void Complete()
         {
-            throw new NotImplementedException();
+            _dbContext.SaveChanges();
+        }
+        public void CompleteWithTransaction()
+        {
+            using(var dbTransaction = _dbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    _dbContext.SaveChanges();
+                    dbTransaction.Commit();
+                }
+                catch(Exception ex)
+                {
+                    dbTransaction.Rollback();
+                }
+            }
         }
     }
 }

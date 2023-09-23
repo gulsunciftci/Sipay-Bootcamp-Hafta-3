@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SipayApi.Base.Response;
 using SipayApi.DataAccess.Domain;
 using SipayApi.DataAccess.Repository;
-using SipayApi.DataAccess.Repository.AccountRepository;
+using SipayApi.DataAccess.Unitofw;
 using SipayApi.Schema;
 using System.Collections.Generic;
 using System.Transactions;
@@ -16,18 +16,18 @@ namespace SipayApi.Service.Controllers
     [Route("Sipay/api/[controller]/[action]")]
     public class TransactionController : ControllerBase
     {
-        private readonly ITransactionRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public TransactionController(ITransactionRepository repository, IMapper mapper)
+        public TransactionController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         [HttpGet]
         public ApiResponse<List<TransactionResponse>> GetAll()
         {
-            var list = _repository.GetAll();
+            var list = _unitOfWork.TransactionRepository.GetAll();
             var mapper = _mapper.Map<List<Transaction>, List<TransactionResponse>>(list);
             return new ApiResponse<List<TransactionResponse>>(mapper);
         }
@@ -35,15 +35,15 @@ namespace SipayApi.Service.Controllers
         [HttpGet("{id}")]
         public ApiResponse<TransactionResponse> Get(int id) //id'ye göre arama yapar
         {
-            var entity = _repository.GetById(id);
+            var entity = _unitOfWork.TransactionRepository.GetById(id);
             var mapper = _mapper.Map<Transaction, TransactionResponse>(entity);
             return new ApiResponse<TransactionResponse>(mapper);
         }
 
         [HttpGet("{GetByReference}")]
-        public ApiResponse<List<TransactionResponse>> GetByReference(string referenceNumber)  //referans numarasına göre arama yapar
+        public ApiResponse<List<TransactionResponse>> GetByReference([FromQuery]string referenceNumber)  //referans numarasına göre arama yapar
         {
-            var entityList = _repository.GetByReference(referenceNumber);
+            var entityList = _unitOfWork.TransactionRepository.where(x=>x.ReferenceNumber==referenceNumber).ToList();
             var mapper = _mapper.Map<List<Transaction>, List<TransactionResponse>>(entityList);
             return new ApiResponse<List<TransactionResponse>>(mapper);
         }
@@ -53,8 +53,8 @@ namespace SipayApi.Service.Controllers
         public ApiResponse Post([FromBody] TransactionRequest request) //Yeni bir student eklendi
         {
             var mapper = _mapper.Map<TransactionRequest, Transaction>(request);
-            _repository.Insert(mapper);
-            _repository.Save();
+            _unitOfWork.TransactionRepository.Insert(mapper);
+            _unitOfWork.TransactionRepository.Save();
             return new ApiResponse();
         }
 
@@ -62,7 +62,7 @@ namespace SipayApi.Service.Controllers
         public ApiResponse Put(int id, [FromBody] TransactionRequest request) //id si verilen student bulunuyorsa güncelleme işlemi yapıldı
         {
             var entity = _mapper.Map<TransactionRequest, Transaction>(request);
-            _repository.Insert(entity);
+            _unitOfWork.TransactionRepository.Insert(entity);
             return new ApiResponse();
         }
 
@@ -70,8 +70,8 @@ namespace SipayApi.Service.Controllers
         [HttpDelete("{id}")]
         public ApiResponse Delete(int id) //id si verilen Stundent silindi
         {
-            _repository.DeleteById(id);
-            _repository.Save();
+            _unitOfWork.TransactionRepository.DeleteById(id);
+            _unitOfWork.TransactionRepository.Save();
             return new ApiResponse();
         }
 

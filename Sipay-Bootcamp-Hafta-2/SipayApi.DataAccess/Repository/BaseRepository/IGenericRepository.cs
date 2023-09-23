@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SipayApi.DataAccess.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -18,7 +19,9 @@ namespace SipayApi.DataAccess.Repository.Base
         void Update(T t);
         void Delete(T t);
         void DeleteById(int id);
+        IEnumerable<T> where(Expression<Func<T,bool>> expression);
         IQueryable<T> GetAllAsQueryable();
         List<T> GetByParameter(Expression<Func<T, bool>> expression);
+        
     }
 }
