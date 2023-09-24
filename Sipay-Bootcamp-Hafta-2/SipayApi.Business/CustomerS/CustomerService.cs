@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SipayApi.Business.CustomerS
 {
-    public class CustomerService : IGenericService<Customer, CustomerRequest, CustomerResponse>, ICustomerService
+    public class CustomerService : IGenericService<Customer, CustomerRequest, CustomerResponse>, ITransactionService
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
@@ -39,9 +39,22 @@ namespace SipayApi.Business.CustomerS
             throw new NotImplementedException();
         }
 
+        public int GetNextCustomerNumber()
+        {
+            int customerNumber = 10000;
+            var lastCustomerNumber = _unitOfWork.CustomerRepository.GetAllAsQueryable().OrderByDescending(X => X.CustomerNumber).FirstOrDefault();
+            if (lastCustomerNumber == null)
+            {
+                return customerNumber;
+            }
+            return lastCustomerNumber.CustomerNumber + 1;
+        
+        }
+
         public ApiResponse Insert(CustomerRequest request)
         {
-            throw new NotImplementedException();
+            request.CustomerNumber = GetNextCustomerNumber();
+            return Insert(request);
         }
 
         public ApiResponse Update(int id, CustomerRequest request)

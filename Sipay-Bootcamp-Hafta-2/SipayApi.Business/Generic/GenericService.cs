@@ -26,7 +26,7 @@ namespace SipayApi.Business.Generic
             _unitOfWork = unitOfWork;
         }
 
-        public ApiResponse Delete(int id)
+        public virtual ApiResponse Delete(int id)
         {
 
             //var entity = _dbContext.Set<TEntity>().Find(id);
@@ -49,7 +49,7 @@ namespace SipayApi.Business.Generic
             }
         }
 
-        public ApiResponse<List<TResponse>> GetAll()
+        public virtual ApiResponse<List<TResponse>> GetAll()
         {
             try
             {
@@ -64,7 +64,7 @@ namespace SipayApi.Business.Generic
             }
         }
 
-        public ApiResponse<TResponse> GetById(int id)
+        public virtual ApiResponse<TResponse> GetById(int id)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace SipayApi.Business.Generic
             }
         }
 
-        public ApiResponse Insert(TRequest request)
+        public virtual ApiResponse Insert(TRequest request)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace SipayApi.Business.Generic
             }
         }
 
-        public ApiResponse Update(int id, TRequest request)
+        public virtual ApiResponse Update(int id, TRequest request)
         {
             try
             {
