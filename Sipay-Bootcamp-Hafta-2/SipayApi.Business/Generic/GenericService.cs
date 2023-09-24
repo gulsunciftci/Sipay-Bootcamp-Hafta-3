@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SipayApi.Base.BaseModel;
 using SipayApi.Base.Response;
 using SipayApi.DataAccess.Repository.Base;
@@ -43,6 +44,7 @@ namespace SipayApi.Business.Generic
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "GenericService.Delete");
                 return new ApiResponse(ex.Message);
             }
         }
@@ -57,6 +59,7 @@ namespace SipayApi.Business.Generic
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "GenericService.GetAll");
                 return new ApiResponse<List<TResponse>>(ex.Message);
             }
         }
@@ -71,6 +74,7 @@ namespace SipayApi.Business.Generic
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "GenericService.GetById");
                 return new ApiResponse<TResponse>(ex.Message);
             }
         }
@@ -89,6 +93,7 @@ namespace SipayApi.Business.Generic
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "GenericService.Insert");
                 return new ApiResponse(ex.Message);
             }
         }
@@ -111,6 +116,7 @@ namespace SipayApi.Business.Generic
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "GenericService.Update");
                 return new ApiResponse(ex.Message);
             }
         }
